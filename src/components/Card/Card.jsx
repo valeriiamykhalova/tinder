@@ -5,7 +5,7 @@ import moment from 'moment';
 
 const { width, height } = Dimensions.get('window');
 
-export function Card({ profile, onSwipeOff }) {
+export const Card = ({ profile, onSwipeOff }) => {
   const { birthday, bio, name, id } = profile;
   const [isLiked, setIsLiked] = useState(false);
 
