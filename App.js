@@ -1,8 +1,10 @@
 import { registerRootComponent } from 'expo';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import React from 'react';
 import * as firebase from 'firebase';
-import { Home } from './src/screens';
+import { Home, Login } from './src/screens';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBSCA5BdipocXoJOkPguXsLUbmbU-6o8YE',
@@ -18,8 +20,22 @@ if (firebase.apps.length === 0) {
   firebase.initializeApp(firebaseConfig);
 }
 
+const Stack = createStackNavigator();
+
 export default function App() {
-  return <Home />;
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Login"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Login" component={Login} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
 }
 
 registerRootComponent(App);

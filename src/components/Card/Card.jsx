@@ -70,7 +70,7 @@ export const Card = ({ profile, onSwipeOff }) => {
       </View>
     </Animated.View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   card: {
