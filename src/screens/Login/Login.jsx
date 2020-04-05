@@ -7,9 +7,10 @@ import { FacebookButton } from '../../components';
 
 export const Login = ({ navigation }) => {
   useEffect(() => {
+    // firebase.auth().signOut();
     firebase.auth().onAuthStateChanged(user => {
       if (user) {
-        navigation.navigate('Home');
+        navigation.navigate('Home', { uid: user.uid });
       }
     });
   }, []);
@@ -26,7 +27,7 @@ export const Login = ({ navigation }) => {
   const login = async () => {
     await Facebook.initializeAsync('170212157356362');
     const options = {
-      permissions: ['public_profile', 'user_birthday', 'hometwown'],
+      permissions: ['public_profile', 'email', 'user_birthday', 'user_hometown'],
     };
 
     const { type, token } = await Facebook.logInWithReadPermissionsAsync(options);
@@ -36,9 +37,9 @@ export const Login = ({ navigation }) => {
       const response = await fetch(`https://graph.facebook.com/me?fields=${fields.toString()}&access_token=${token}`);
 
       const userData = await response.json();
-      const { uid } = await authenticate(token);
+      const { user } = await authenticate(token);
 
-      createUser(uid, userData);
+      createUser(user.uid, userData);
     } else {
       console.log('Error!');
     }

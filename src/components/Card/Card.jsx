@@ -6,7 +6,10 @@ import moment from 'moment';
 const { width, height } = Dimensions.get('window');
 
 export const Card = ({ profile, onSwipeOff }) => {
-  const { birthday, bio, name, id } = profile;
+  const { birthday, hometown, first_name, id } = profile;
+  const name = profile.first_name;
+  const town = profile.hometown.name;
+
   const [isLiked, setIsLiked] = useState(false);
 
   const profileBirthDay = moment(birthday, 'MM/DD/YYYY');
@@ -62,7 +65,7 @@ export const Card = ({ profile, onSwipeOff }) => {
           <Text style={{ fontSize: 20 }}>
             {name}, {profileAge}
           </Text>
-          <Text style={{ fontSize: 15, color: 'darkgray' }}>{bio}</Text>
+          <Text style={{ fontSize: 15, color: 'darkgray' }}>{town}</Text>
         </View>
         <TouchableHighlight style={[styles.button, { backgroundColor: buttonColor }]} onPress={onPress}>
           <Text style={{ fontSize: 12, color: 'white' }}>Like</Text>
