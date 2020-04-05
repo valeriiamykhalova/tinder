@@ -5,35 +5,66 @@ import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 import { GeoFire } from 'geofire';
 import { Card, SimpleScroller } from '../../components';
+import { Profile } from '../Profile';
+import filter from '../../modules/filter.js';
 
 export const Home = ({ route }) => {
   const [profiles, setProfiles] = useState([]);
   const [profileIndex, setProfileIndex] = useState(0);
+  const [user, setUser] = useState(route.params.user);
 
   useEffect(() => {
-    const { uid } = route.params;
+    const { uid } = user;
+
+    firebase
+      .database()
+      .ref('users')
+      .child(uid)
+      .on('value', (snap) => {
+        setUser(snap.val());
+        setProfiles([]);
+        setProfileIndex(0);
+        getProfiles();
+      });
+
     updateUserLocation(uid);
-    getProfiles(uid);
   }, []);
 
   const getUser = (uid) => {
     return firebase.database().ref('users').child(uid).once('value');
   };
 
-  const getProfiles = async (uid) => {
-    const geoFireRef = new GeoFire(firebase.database().ref('geoData'));
-    const userLocation = await geoFireRef.get(uid);
+  const getProfiles = async () => {
+    // const geoFireRef = new GeoFire(firebase.database().ref('geoData'));
+    // const userLocation = await geoFireRef.get(uid);
 
-    // Add users to main prfile, who are 10km from him
-    const geoQuery = geoFireRef.query({
-      center: userLocation,
-      radius: 10,
-    });
+    // // Add users to main prfile, who are 10km from him
+    // const geoQuery = geoFireRef.query({
+    //   center: userLocation,
+    //   radius: 10,
+    // });
 
-    geoQuery.on('key_entered', async (key, location, distance) => {
-      const user = await getUser(uid);
-      setProfiles([...profiles, user.val()]);
-    });
+    // geoQuery.on('key_entered', async (key, location, distance) => {
+    //   const user = await getUser(uid);
+    //   setProfiles([...profiles, user.val()]);
+    // });
+
+    // temporary user data without location coordinates
+    firebase
+      .database()
+      .ref()
+      .child('users')
+      .once('value', (snap) => {
+        const profilesArray = [];
+        snap.forEach((profile) => {
+          const { first_name, hometown, birthday, gender, id } = profile.val();
+
+          profilesArray.push({ first_name, hometown, birthday, gender, id });
+        });
+
+        const filteredProfiles = filter(profilesArray, user);
+        setProfiles(filteredProfiles);
+      });
   };
 
   const updateUserLocation = async (uid) => {
@@ -65,5 +96,5 @@ export const Home = ({ route }) => {
     );
   };
 
-  return <SimpleScroller screens={[<View style={{ flex: 1, backgroundColor: 'red' }} />, cardStack()]} />;
+  return <SimpleScroller screens={[<Profile user={user} />, cardStack()]} />;
 };

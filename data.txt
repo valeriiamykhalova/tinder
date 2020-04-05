@@ -1,44 +1,48 @@
 useEffect(() => {
-    profiles.forEach((element) => {
+    profilesArr.forEach((element) => {
       firebase.database().ref().child('users').push(element);
     });
   }, []);
 
-const profiles = [
-  {
-    id: '100012121187000',
-    name: 'Valeriya',
-    birthday: '06/19/1999',
-    bio: 'Student',
-  },
-  {
-    id: '100012121187089',
-    name: 'Shree Kishan',
-    birthday: '08/11/1996',
-    bio: 'Dancer',
-  },
-  {
-    id: '100017778812917',
-    name: 'Svitlana',
-    birthday: '06/01/1996',
-    bio: 'Choreograper',
-  },
-  {
-    id: '100011778877261',
-    name: 'Tamara',
-    birthday: '06/19/1999',
-    bio: 'Student',
-  },
-  {
-    id: '100025993943813',
-    name: 'Olha',
-    birthday: '08/11/1996',
-    bio: 'Dancer',
-  },
-  {
-    id: '100006084185765',
-    name: 'Irina',
-    birthday: '06/01/1996',
-    bio: 'Choreograper',
-  },
-];
+const profilesArr = [
+    {
+      id: '100017778812917',
+      first_name: 'Svitlana',
+      birthday: '06/01/1996',
+      gender: 'female',
+      hometown: {
+        id: 1,
+        name: 'Будапешт',
+      },
+    },
+    {
+      id: '100011778877261',
+      first_name: 'Tamara',
+      birthday: '06/19/1999',
+      gender: 'female',
+      hometown: {
+        id: 2,
+        name: 'Киев',
+      },
+    },
+    {
+      id: '100025993943813',
+      first_name: 'Igor',
+      birthday: '08/11/1990',
+      gender: 'male',
+      hometown: {
+        id: 3,
+        name: 'Хмельницкий',
+      },
+    },
+    {
+      id: '100006084185765',
+      first_name: 'Irina',
+      gender: 'female',
+      birthday: '06/01/1993',
+      hometown: {
+        id: 3,
+        name: 'Хмельник',
+      },
+    },
+  ];

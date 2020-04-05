@@ -1,30 +1,63 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Facebook from 'expo-facebook';
 import * as firebase from 'firebase';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { CommonActions } from '@react-navigation/native';
 
 import { FacebookButton } from '../../components';
 
 export const Login = ({ navigation }) => {
+  const [showSpinner, setShowSpinner] = useState(true);
+
   useEffect(() => {
     // firebase.auth().signOut();
-    firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        navigation.navigate('Home', { uid: user.uid });
+    firebase.auth().onAuthStateChanged((auth) => {
+      if (auth) {
+        const firebaseRef = firebase.database().ref('users');
+        firebaseRef.child(auth.uid).on('value', (snap) => {
+          const user = snap.val();
+
+          if (user != null) {
+            firebaseRef.child(auth.uid).off('value');
+            goHome(user);
+          }
+        });
+      } else {
+        setShowSpinner(false);
       }
     });
   }, []);
 
-  const authenticate = token => {
+  const goHome = (user) => {
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'Home',
+            params: { user },
+          },
+        ],
+      })
+    );
+  };
+
+  const authenticate = (token) => {
     const credential = firebase.auth.FacebookAuthProvider.credential(token);
     return firebase.auth().signInWithCredential(credential);
   };
 
   const createUser = (uid, userData) => {
-    firebase.database().ref('users').child(uid).update(userData);
+    firebase
+      .database()
+      .ref('users')
+      .child(uid)
+      .update({ ...userData, uid });
   };
 
   const login = async () => {
+    setShowSpinner(true);
+
     await Facebook.initializeAsync('170212157356362');
     const options = {
       permissions: ['public_profile', 'email', 'user_birthday', 'user_hometown'],
@@ -47,7 +80,7 @@ export const Login = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <FacebookButton onPress={login} />
+      {showSpinner ? <ActivityIndicator animating={showSpinner} /> : <FacebookButton onPress={login} />}
     </View>
   );
 };
