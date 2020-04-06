@@ -1,63 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, FlatList, StyleSheet, View, Text } from 'react-native';
+import { SafeAreaView, FlatList, StyleSheet, View, Text, TouchableHighlight } from 'react-native';
 import * as firebase from 'firebase';
 import _ from 'lodash';
 import { CircleImage } from '../../components';
 
-// const profilesArr = [
-//   {
-//     id: '100017778812917',
-//     first_name: 'Svitlana',
-//     birthday: '06/01/1996',
-//     gender: 'female',
-//     hometown: {
-//       id: 1,
-//       name: 'Будапешт',
-//     },
-//   },
-//   {
-//     id: '100011778877261',
-//     first_name: 'Tamara',
-//     birthday: '06/19/1999',
-//     gender: 'female',
-//     hometown: {
-//       id: 2,
-//       name: 'Киев',
-//     },
-//   },
-//   {
-//     id: '100025993943813',
-//     first_name: 'Igor',
-//     birthday: '08/11/1990',
-//     gender: 'male',
-//     hometown: {
-//       id: 3,
-//       name: 'Хмельницкий',
-//     },
-//   },
-//   {
-//     id: '100006084185765',
-//     first_name: 'Irina',
-//     gender: 'female',
-//     birthday: '06/01/1993',
-//     hometown: {
-//       id: 3,
-//       name: 'Хмельник',
-//     },
-//   },
-// ];
-
-const Item = ({ item }) => {
-  const { id, first_name } = item;
-  return (
-    <View style={styles.item}>
-      <CircleImage size={80} id={id} />
-      <Text style={{ fontSize: 18, paddingLeft: 10 }}>{first_name}</Text>
-    </View>
-  );
-};
-
-export const Matches = ({ user }) => {
+export const Matches = ({ user, navigation }) => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
@@ -93,6 +40,19 @@ export const Matches = ({ user }) => {
 
         Promise.all(promises).then((data) => setData(data));
       });
+  };
+
+  const Item = ({ item }) => {
+    const { id, first_name } = item;
+
+    return (
+      <TouchableHighlight onPress={() => navigation.navigate('Chat', { user, profile: item })}>
+        <View style={styles.item}>
+          <CircleImage size={80} id={id} />
+          <Text style={{ fontSize: 18, paddingLeft: 10 }}>{first_name}</Text>
+        </View>
+      </TouchableHighlight>
+    );
   };
 
   return (

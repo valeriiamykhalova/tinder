@@ -9,7 +9,7 @@ import { Profile } from '../Profile';
 import { Matches } from '../Matches';
 import filter from '../../modules/filter';
 
-export const Home = ({ route }) => {
+export const Home = ({ route, navigation }) => {
   const [profiles, setProfiles] = useState([]);
   const [profileIndex, setProfileIndex] = useState(0);
   const [user, setUser] = useState(route.params.user);
@@ -129,5 +129,7 @@ export const Home = ({ route }) => {
     );
   };
 
-  return <SimpleScroller screens={[<Profile user={user} />, cardStack(), <Matches user={user} />]} />;
+  return (
+    <SimpleScroller screens={[<Profile user={user} />, cardStack(), <Matches user={user} navigation={navigation} />]} />
+  );
 };

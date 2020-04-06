@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import React from 'react';
 import * as firebase from 'firebase';
-import { Home, Login } from './src/screens';
+import { Home, Login, Chat } from './src/screens';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBSCA5BdipocXoJOkPguXsLUbmbU-6o8YE',
@@ -33,6 +33,7 @@ export default function App() {
       >
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Chat" component={Chat} />
       </Stack.Navigator>
     </NavigationContainer>
   );
