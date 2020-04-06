@@ -6,7 +6,7 @@ import moment from 'moment';
 const { width, height } = Dimensions.get('window');
 
 export const Card = ({ profile, onSwipeOff }) => {
-  const { birthday, hometown, first_name, id } = profile;
+  const { birthday, hometown, first_name, id, uid } = profile;
   const name = profile.first_name;
   const town = profile.hometown.name;
 
@@ -22,16 +22,18 @@ export const Card = ({ profile, onSwipeOff }) => {
   const cardPanResponder = React.useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
+      onPanResponderTerminationRequest: () => false,
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }]),
       onPanResponderRelease: (e, { dx }) => {
         const absDX = Math.abs(dx);
         const direction = absDX / dx;
+        const swipedRight = direction > 0;
 
         if (absDX > 120) {
           Animated.decay(pan, {
             velocity: { x: 3 * direction, y: 0 },
             deceleration: 0.995,
-          }).start(onSwipeOff);
+          }).start(() => onSwipeOff(swipedRight, uid));
         } else {
           Animated.spring(pan, {
             toValue: { x: 0, y: 0 },

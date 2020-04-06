@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-export default (profiles, user) => {
+export default (profiles, user, swipedProfiles) => {
   const rejectMe = _.reject(profiles, (profile) => profile.id === user.id);
 
   const filterGender = _.filter(rejectMe, (profile) => {
@@ -10,5 +10,10 @@ export default (profiles, user) => {
     return userShowMen || userShowWomen;
   });
 
-  return filterGender;
+  const filterSwiped = _.filter(filterGender, (profile) => {
+    const swiped = profile.uid in swipedProfiles;
+    return !swiped;
+  });
+
+  return filterSwiped;
 };

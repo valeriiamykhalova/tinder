@@ -8,7 +8,8 @@ export const SimpleScroller = ({ screens }) => {
 
   const scrollPanResponder = React.useRef(
     PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
+      onStartShouldSetPanResponder: () => false,
+      onMoveShouldSetPanResponder: (e, { dx, dy }) => Math.abs(dx) > Math.abs(dy),
       onPanResponderGrant: () => {
         pan.setOffset(pan._value);
         pan.setValue(0);
@@ -35,6 +36,26 @@ export const SimpleScroller = ({ screens }) => {
       },
     })
   ).current;
+
+  const handlePanResponerEnd = (e, { vx }) => {
+    pan.flattenOffset();
+
+    let move = Math.round(pan._value / width) * width;
+
+    if (Math.abs(vx) > 0.25) {
+      // 1 - swipe to the right, -1 - swipe to the left
+      const direction = vx / Math.abs(vx);
+      const scrollPos = direction > 0 ? Math.ceil(pan._value / width) : Math.floor(pan._value / width);
+
+      move = scrollPos * width;
+    }
+    const minScroll = (screens.length - 1) * -width;
+
+    Animated.spring(pan, {
+      toValue: clamp(move, minScroll, 0),
+      bouciness: 0,
+    }).start();
+  };
 
   const clamp = (num, min, max) => {
     return num <= min ? min : num >= max ? max : num;

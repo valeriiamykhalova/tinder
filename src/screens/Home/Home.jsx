@@ -6,6 +6,7 @@ import * as Location from 'expo-location';
 import { GeoFire } from 'geofire';
 import { Card, SimpleScroller } from '../../components';
 import { Profile } from '../Profile';
+import { Matches } from '../Matches';
 import filter from '../../modules/filter';
 
 export const Home = ({ route }) => {
@@ -37,7 +38,18 @@ export const Home = ({ route }) => {
     return firebase.database().ref('users').child(uid).once('value');
   };
 
+  const getSwiped = (uid) => {
+    return firebase
+      .database()
+      .ref('relationships')
+      .child(uid)
+      .child('liked')
+      .once('value')
+      .then((snap) => snap.val() || {});
+  };
+
   const getProfiles = async (updatedUser) => {
+    const swipedProfiles = await getSwiped(updatedUser.uid);
     // const geoFireRef = new GeoFire(firebase.database().ref('geoData'));
     // const userLocation = await geoFireRef.get(uid);
 
@@ -60,12 +72,12 @@ export const Home = ({ route }) => {
       .once('value', (snap) => {
         const profilesArray = [];
         snap.forEach((profile) => {
-          const { first_name, hometown, birthday, gender, id } = profile.val();
+          const { first_name, hometown, birthday, gender, id, uid } = profile.val();
 
-          profilesArray.push({ first_name, hometown, birthday, gender, id });
+          profilesArray.push({ first_name, hometown, birthday, gender, id, uid });
         });
 
-        const filteredProfiles = filter(profilesArray, updatedUser);
+        const filteredProfiles = filter(profilesArray, updatedUser, swipedProfiles);
         setProfiles(filteredProfiles);
       });
   };
@@ -83,9 +95,27 @@ export const Home = ({ route }) => {
     }
   };
 
-  const nextCard = useCallback(() => {
-    setProfileIndex((index) => index + 1);
-  }, [profileIndex]);
+  const relate = (userUid, profileUid, status) => {
+    const relationUpdate = {};
+    relationUpdate[`${userUid}/liked/${profileUid}`] = status;
+    relationUpdate[`${profileUid}/liked/${userUid}`] = status;
+
+    firebase.database().ref('relationships').update(relationUpdate);
+  };
+
+  const nextCard = useCallback(
+    (swipedRight, profileUid) => {
+      const userUid = user.uid;
+      setProfileIndex((index) => index + 1);
+
+      if (swipedRight) {
+        relate(userUid, profileUid, true);
+      } else {
+        relate(userUid, profileUid, false);
+      }
+    },
+    [profileIndex]
+  );
 
   const cardStack = () => {
     return (
@@ -99,5 +129,5 @@ export const Home = ({ route }) => {
     );
   };
 
-  return <SimpleScroller screens={[<Profile user={user} />, cardStack()]} />;
+  return <SimpleScroller screens={[<Profile user={user} />, cardStack(), <Matches user={user} />]} />;
 };
