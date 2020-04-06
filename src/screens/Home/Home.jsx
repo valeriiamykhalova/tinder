@@ -6,7 +6,7 @@ import * as Location from 'expo-location';
 import { GeoFire } from 'geofire';
 import { Card, SimpleScroller } from '../../components';
 import { Profile } from '../Profile';
-import filter from '../../modules/filter.js';
+import filter from '../../modules/filter';
 
 export const Home = ({ route }) => {
   const [profiles, setProfiles] = useState([]);
@@ -21,10 +21,13 @@ export const Home = ({ route }) => {
       .ref('users')
       .child(uid)
       .on('value', (snap) => {
-        setUser(snap.val());
+        const updatedUser = snap.val();
+
+        setUser(updatedUser);
         setProfiles([]);
         setProfileIndex(0);
-        getProfiles();
+
+        getProfiles(updatedUser);
       });
 
     updateUserLocation(uid);
@@ -34,7 +37,7 @@ export const Home = ({ route }) => {
     return firebase.database().ref('users').child(uid).once('value');
   };
 
-  const getProfiles = async () => {
+  const getProfiles = async (updatedUser) => {
     // const geoFireRef = new GeoFire(firebase.database().ref('geoData'));
     // const userLocation = await geoFireRef.get(uid);
 
@@ -62,7 +65,7 @@ export const Home = ({ route }) => {
           profilesArray.push({ first_name, hometown, birthday, gender, id });
         });
 
-        const filteredProfiles = filter(profilesArray, user);
+        const filteredProfiles = filter(profilesArray, updatedUser);
         setProfiles(filteredProfiles);
       });
   };

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch } from 'react-native';
 import * as firebase from 'firebase';
-// import Slider from 'react-native-multi-slider';
 import { CircleImage } from '../../components';
 
 export const Profile = ({ user }) => {
@@ -22,17 +21,8 @@ export const Profile = ({ user }) => {
     <View style={styles.container}>
       <View style={styles.profile}>
         <CircleImage id={user.id} size={120} />
-        <Text>{name}</Text>
+        <Text style={{ marginTop: 5, fontSize: 15 }}>{name}</Text>
       </View>
-      {/* <Slider
-        values={[0, 10]}
-        step={20}
-        selectionColor="#3df"
-        blankColor="#f618"
-        onValueChanged={(low, high, fromUser) => {
-          this.setState({ rangeLow: low, rangeHigh: high });
-        }}
-      /> */}
       <View style={styles.switch}>
         <Text>Show Men</Text>
         <Switch

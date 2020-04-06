@@ -62,7 +62,6 @@ export const SimpleScroller = ({ screens }) => {
 const styles = StyleSheet.create({
   scroller: {
     flex: 1,
-    backgroundColor: 'blue',
     flexDirection: 'row',
   },
 });
